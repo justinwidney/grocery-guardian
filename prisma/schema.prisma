@@ -1,39 +1,35 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
-    url               = env("DATABASE_URL")
-    directUrl         = env("DIRECT_URL")
+  provider  = "prisma-client-js"
+  directUrl = "(function)"
+  url       = "(function)"
 }
-
-   enum Role {
-     admin
-     user
-   }
-
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
 }
 
-  model Profile {
-     id    String @id @db.Uuid
-     role  Role   @default(user)
-     Posts Post[]
+model Profile {
+  id    String @id @db.Uuid
+  role  Role   @default(user)
+  Posts Post[]
 
-     @@map("profile")
-   }
+  @@map("profile")
+}
 
 model Post {
-    id        Int      @id @default(autoincrement()) 
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    creator   Profile @relation(fields: [creatorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    creatorId String  @db.Uuid 
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creatorId String   @db.Uuid
+  creator   Profile  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
+  @@index([creatorId])
+  @@map("post")
+}
 
-    @@map("post")
+enum Role {
+  admin
+  user
 }

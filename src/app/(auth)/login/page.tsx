@@ -10,6 +10,10 @@ import { createClient } from "~/utils/supabase/server";
 export default async function page() {
   const { data } = await readUser();
 
+  if (data.user) {
+    redirect("/");
+  }
+
   const supabase = await createClient();
 
   const posts = await supabase.from("post").select("*");

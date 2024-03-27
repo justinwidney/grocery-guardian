@@ -22,3 +22,4 @@ CREATE TABLE "post" (
 
 -- AddForeignKey
 ALTER TABLE "post" ADD CONSTRAINT "post_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "profile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

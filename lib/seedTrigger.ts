@@ -47,4 +47,4 @@ async function main() {
   process.exit();
 }
 
-main();
+void main();

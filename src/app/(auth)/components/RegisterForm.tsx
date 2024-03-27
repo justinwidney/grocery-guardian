@@ -19,6 +19,8 @@ import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/utils/form-handling";
 
 import { signUpWithEmailAndPassword } from "../actions/register";
+import { useState } from "react";
+import { redirect } from "next/navigation";
 
 const FormSchema = z
   .object({
@@ -35,6 +37,8 @@ const FormSchema = z
     path: ["confirm"],
   });
 export default function RegisterForm() {
+  const [loading, setLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -55,13 +59,12 @@ export default function RegisterForm() {
       ),
     });
 
+    setLoading(true);
     const result = await signUpWithEmailAndPassword(data);
 
-    const { error } = JSON.parse(result);
+    const { error }: { error: Error } = JSON.parse(result);
 
-    console.log(error);
-
-    if (error?.message) {
+    if (error) {
       toast({
         title: "You submitted the following values:",
         variant: "destructive",
@@ -146,7 +149,9 @@ export default function RegisterForm() {
         />
         <Button type="submit" className="flex w-full gap-2">
           Register
-          <AiOutlineLoading3Quarters className="animate-spin" />
+          {loading && (
+            <AiOutlineLoading3Quarters className={cn("animate-spin")} />
+          )}
         </Button>
       </form>
     </Form>

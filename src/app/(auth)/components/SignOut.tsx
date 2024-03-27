@@ -4,7 +4,7 @@ import { createClient } from "~/utils/supabase/server";
 export default function SignOut() {
   const logout = async () => {
     "use server";
-    const supabase = await createClient();
+    const supabase = createClient();
   };
 
   return (

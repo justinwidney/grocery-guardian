@@ -1,8 +1,21 @@
+"use server";
+
 import Link from "next/link";
+import "~/styles/globals.css";
 
 import { CreatePost } from "~/app/_components/create-post";
 import { api } from "~/trpc/server";
-import { createClient } from "./(auth)/utils";
+import {
+  DecorateProcedure,
+  UseTRPCQueryResult,
+} from "@trpc/react-query/shared";
+import { appRouter } from "~/server/api/root";
+import { Suspense } from "react";
+import Image from "next/image";
+
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -42,25 +55,32 @@ export default async function Home() {
             {hello ? hello.greeting : "Loading tRPC query..."}
           </p>
         </div>
-
-        <CrudShowcase />
+        <Suspense fallback={<p>Loading...</p>}>
+          <CrudShowcase />
+        </Suspense>
       </div>
     </main>
   );
 }
 
 async function CrudShowcase() {
-  const latestPost = await api.post.getLatest();
+  //const latestPost = await api.post.getLatest();
+  const data = await api.post.getAll();
 
   return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
+    <>
+      <div className="w-full max-w-xs">
+        <div>
+          {data?.map((post) => (
+            <div key={post.id} className="flex items-center gap-2">
+              <p>{post.name}</p>
+              <p>{dayjs(post.createdAt).fromNow()}</p>
+            </div>
+          ))}
+        </div>
 
-      <CreatePost />
-    </div>
+        <CreatePost />
+      </div>
+    </>
   );
 }

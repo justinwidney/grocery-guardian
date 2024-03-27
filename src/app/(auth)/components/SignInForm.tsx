@@ -15,6 +15,8 @@ import { Input } from "@/src/components/ui/input";
 import { toast } from "@/src/components/ui/use-toast";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/utils/form-handling";
+import { useState } from "react";
+import { logInWithEmailAndPassword } from "../actions/register";
 
 const FormSchema = z.object({
   email: z.string().email(),
@@ -32,7 +34,13 @@ export default function SignInForm() {
     },
   });
 
+  const [loading, setLoading] = useState(false);
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setLoading(true);
+
+    const result = await logInWithEmailAndPassword(data);
+
     toast({
       title: "You submitted the following values:",
       description: (
@@ -85,7 +93,7 @@ export default function SignInForm() {
         />
         <Button type="submit" className="flex w-full gap-2">
           SignIn
-          <AiOutlineLoading3Quarters className={cn("animate-spin")} />
+          {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
         </Button>
       </form>
     </Form>
