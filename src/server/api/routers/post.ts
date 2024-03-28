@@ -2,7 +2,11 @@ import { useSupabaseRowLevelSecurity } from "@/prisma/extensions";
 import { z } from "zod";
 import { readUser } from "~/app/(auth)/actions";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  privateProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { createClient } from "~/utils/supabase/server";
 
 export const postRouter = createTRPCRouter({
@@ -28,27 +32,26 @@ export const postRouter = createTRPCRouter({
       .post.findMany();
   }),
 
-  create: publicProcedure
+  create: privateProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      const supabase = createClient();
-
-      const user = await readUser();
-
-      if (user.data.user) {
-        return ctx.db.post.create({
+      return ctx.db
+        .$extends(
+          useSupabaseRowLevelSecurity({
+            claimsFn: () => ({
+              sub: ctx.userId,
+            }),
+          }),
+        )
+        .post.create({
           data: {
             name: input.name,
-            creatorId: user.data.user?.id,
+            creatorId: ctx.userId,
           },
         });
-      } else {
-        console.log("User is not a creator");
-        return;
-      }
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {

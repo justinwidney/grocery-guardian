@@ -11,8 +11,8 @@ export function CreatePost() {
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
-      router.refresh();
       setName("");
+      router.refresh();
     },
   });
 

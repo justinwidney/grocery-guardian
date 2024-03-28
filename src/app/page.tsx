@@ -15,7 +15,8 @@ import Image from "next/image";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
+import { LoadingSpinner } from "~/components/icons/loading";
+import { useRouter } from "next/navigation";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -55,7 +56,8 @@ export default async function Home() {
             {hello ? hello.greeting : "Loading tRPC query..."}
           </p>
         </div>
-        <Suspense fallback={<p>Loading...</p>}>
+
+        <Suspense fallback={<LoadingSpinner />}>
           <CrudShowcase />
         </Suspense>
       </div>
@@ -65,22 +67,6 @@ export default async function Home() {
 
 async function CrudShowcase() {
   //const latestPost = await api.post.getLatest();
-  const data = await api.post.getAll();
 
-  return (
-    <>
-      <div className="w-full max-w-xs">
-        <div>
-          {data?.map((post) => (
-            <div key={post.id} className="flex items-center gap-2">
-              <p>{post.name}</p>
-              <p>{dayjs(post.createdAt).fromNow()}</p>
-            </div>
-          ))}
-        </div>
-
-        <CreatePost />
-      </div>
-    </>
-  );
+  return <></>;
 }
