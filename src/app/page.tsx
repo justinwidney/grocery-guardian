@@ -68,7 +68,7 @@ export default async function Home() {
 async function CrudShowcase() {
   //const latestPost = await api.post.getLatest();
 
-  const { data, isError } = await api.post.getAll.useQuery(void {}, {
+  const { data, isError } = api.post.getAll.useQuery(void {}, {
     retry: 0,
   });
 

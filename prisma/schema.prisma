@@ -17,6 +17,85 @@ model Profile {
   @@map("profile")
 }
 
+model Item {
+  id        String   @id @unique @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  stores     Item_Store[]
+  image      String?
+  filters     ItemFilter[]
+  
+}
+
+model ItemFilter {
+  id        String   @id @default(cuid())
+
+  item      Item?    @relation(fields: [itemid], references: [id])
+  itemid    String
+
+  dairy Int @default(0)
+  meat Int  @default(0)
+  produce Int @default(0)
+  frozen Int @default(0)
+  fish Int @default(0)
+  snacks Int @default(0)
+  drinks Int @default(0)
+  Deli Int @default(0)
+  pantry Int @default(0)
+
+
+}
+
+
+model Price {
+  id        String   @id @default(cuid())
+  price     Float
+  salePrice Float?
+  createdAt DateTime @default(now())
+  itemStore Item_Store? @relation(fields: [itemID, storeID], references: [storeid, itemid])
+  itemID String 
+  storeID String
+
+}
+
+model Store{
+  id           String         @id @unique @default(cuid())
+  name    String
+  address String
+  lat     Float?
+  long    Float?
+  city    String
+  state   String?
+  website String?
+  Item_Store Item_Store[]
+
+}
+
+
+model Item_Store {
+  item Item? @relation(fields: [itemid], references: [id])
+  itemid String
+
+  store Store? @relation(fields: [storeid], references: [id])
+  storeid String
+
+  price Float
+
+  priceHistory Price[]
+  priceid String
+
+  salePrice Float?
+  lastUpdated DateTime @default(now())
+
+  @@id([storeid, itemid])
+  @@unique([storeid, itemid], name: "PriceIndentifier")
+}
+
+
+
+
+
 model Post {
   id        String   @id @default(cuid())
   name      String

@@ -48,6 +48,8 @@ export const postRouter = createTRPCRouter({
       return [];
     }
 
+    console.log("user", user);
+
     const { success } = await ratelimit.limit(user.data.user?.id);
 
     if (!success) {
