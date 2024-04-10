@@ -13,6 +13,8 @@ model Profile {
   id    String @id @db.Uuid
   role  Role   @default(user)
   Posts Post[]
+  Product_Rating Product_Rating[]
+
 
   @@map("profile")
 }
@@ -31,7 +33,7 @@ model Item {
 model ItemFilter {
   id        String   @id @default(cuid())
 
-  item      Item?    @relation(fields: [itemid], references: [id])
+  item      Item    @relation(fields: [itemid], references: [id])
   itemid    String
 
   dairy Int @default(0)
@@ -48,14 +50,18 @@ model ItemFilter {
 }
 
 
+
+
+
 model Price {
-  id        String   @id @default(cuid())
   price     Float
   salePrice Float?
   createdAt DateTime @default(now())
   itemStore Item_Store? @relation(fields: [itemID, storeID], references: [storeid, itemid])
+
   itemID String 
   storeID String
+  @@id([itemID, storeID, createdAt])
 
 }
 
@@ -72,6 +78,23 @@ model Store{
 
 }
 
+model Product_Rating {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  price    Float?
+
+  item      Item_Store     @relation(fields: [itemid, storeid], references: [itemid, storeid])
+  itemid    String
+  storeid  String
+
+  profile   Profile  @relation(fields: [profileid], references: [id])
+  profileid String @db.Uuid
+
+  @@unique([itemid, storeid, profileid])
+}
+
 
 model Item_Store {
   item Item? @relation(fields: [itemid], references: [id])
@@ -83,6 +106,7 @@ model Item_Store {
   price Float
 
   priceHistory Price[]
+  productRating Product_Rating[]
   priceid String
 
   salePrice Float?
