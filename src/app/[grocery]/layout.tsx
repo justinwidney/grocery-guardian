@@ -8,6 +8,7 @@ import { buttonVariants } from "~/components/ui/button";
 import { cn } from "~/utils/form-handling";
 import { Icons } from "~/components/icons";
 import { Header } from "~/components/header";
+import * as Separator from "@radix-ui/react-separator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <div className="justify-content-center flex min-h-screen flex-col ">
       <Header />
+      <hr className="mx-auto h-2 w-full max-w-7xl stroke-slate-50"></hr>
       <main className="flex-1">{children}</main>
     </div>
   );

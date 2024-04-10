@@ -24,12 +24,15 @@ import { redirect } from "next/navigation";
 
 const FormSchema = z
   .object({
-    email: z.string().email(),
+    email: z
+      .string()
+      .min(2, { message: "This field needs to be filed." })
+      .email("Not a valid email."),
     password: z.string().min(6, {
       message: "Password is required.",
     }),
     confirm: z.string().min(6, {
-      message: "Password is required.",
+      message: "Password  is required.",
     }),
   })
   .refine((data) => data.confirm === data.password, {

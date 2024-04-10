@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "@/src/components/ui/use-toast";
 
 import { api } from "~/trpc/react";
 
@@ -13,6 +14,16 @@ export function CreatePost() {
     onSuccess: () => {
       setName("");
       router.refresh();
+    },
+    onError: (error) => {
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(error, null, 2)}</code>
+          </pre>
+        ),
+      });
     },
   });
 

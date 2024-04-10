@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { Toaster } from "@/src/components/ui/toaster";
 
 const inter = Inter({
   subsets: ["latin"],

@@ -1,10 +1,12 @@
-"use server";
+"use client";
 
 import Link from "next/link";
 import "~/styles/globals.css";
 
 import { CreatePost } from "~/app/_components/create-post";
-import { api } from "~/trpc/server";
+
+import { api } from "~/trpc/react";
+
 import {
   DecorateProcedure,
   UseTRPCQueryResult,
@@ -16,11 +18,12 @@ import Image from "next/image";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "~/components/icons/loading";
-import { useRouter } from "next/navigation";
+import { toast } from "~/components/ui/use-toast";
+import { Toaster } from "~/components/ui/toaster";
+
+dayjs.extend(relativeTime);
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
@@ -51,16 +54,13 @@ export default async function Home() {
             </div>
           </Link>
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p>
-        </div>
+        <div className="flex flex-col items-center gap-2"></div>
 
         <Suspense fallback={<LoadingSpinner />}>
           <CrudShowcase />
         </Suspense>
       </div>
+      <Toaster />
     </main>
   );
 }
@@ -68,5 +68,34 @@ export default async function Home() {
 async function CrudShowcase() {
   //const latestPost = await api.post.getLatest();
 
-  return <></>;
+  const { data, isError } = await api.post.getAll.useQuery(void {}, {
+    retry: 0,
+  });
+
+  if (isError) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    });
+  }
+
+  return (
+    <>
+      <CreatePost />
+      <div className="w-full max-w-xs">
+        <div>
+          {data?.map((post) => (
+            <div key={post.id} className="flex items-center gap-2">
+              <p>{post.name}</p>
+              <p>{dayjs(post.createdAt).fromNow()}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
 }

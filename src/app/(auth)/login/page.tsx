@@ -4,8 +4,7 @@ import React from "react";
 import { AuthForm } from "../components/AuthForm";
 import readUserSession, { readUser } from "../actions";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
-import { createClient } from "~/utils/supabase/server";
+import { Toaster } from "~/components/ui/toaster";
 
 export default async function page() {
   const { data } = await readUser();
@@ -14,16 +13,11 @@ export default async function page() {
     redirect("/");
   }
 
-  const supabase = await createClient();
-
-  const posts = await supabase.from("post").select("*");
-
-  console.log(posts, "my posts");
-
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="w-96">
         <AuthForm />
+        <Toaster />
       </div>
     </div>
   );
