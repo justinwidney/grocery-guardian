@@ -8,11 +8,13 @@ import React, {
 } from "react";
 import { EmblaCarouselType } from "embla-carousel";
 
+type nextFunction = (take: number, offset: number) => [];
+
 type UsePrevNextButtonsType = {
   prevBtnDisabled: boolean;
   nextBtnDisabled: boolean;
   onPrevButtonClick: () => void;
-  onNextButtonClick: () => void;
+  onNextButtonClick: (myfunction: nextFunction) => void;
 };
 
 export const usePrevNextButtons = (
@@ -79,7 +81,7 @@ export const PrevButton: React.FC<PropType> = (props) => {
   );
 };
 
-export const NextButton: React.FC<PropType> = (props) => {
+export function NextButton(props: PropType) {
   const { children, ...restProps } = props;
 
   return (
@@ -97,4 +99,4 @@ export const NextButton: React.FC<PropType> = (props) => {
       {children}
     </button>
   );
-};
+}

@@ -10,6 +10,7 @@ import Hero from "./components/carousel/EmblaCarousel";
 import EmblaCarousel from "./components/carousel/EmblaCarousel";
 
 import "./components/carousel/embla.css";
+import { api } from "~/trpc/server";
 
 const OPTIONS: EmblaOptionsType = {
   align: "start",

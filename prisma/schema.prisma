@@ -107,10 +107,11 @@ model Item_Store {
 
   priceHistory Price[]
   productRating Product_Rating[]
-  priceid String
 
   salePrice Float?
+  saleEnd DateTime? 
   lastUpdated DateTime @default(now())
+
 
   @@id([storeid, itemid])
   @@unique([storeid, itemid], name: "PriceIndentifier")
