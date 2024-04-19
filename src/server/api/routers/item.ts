@@ -35,7 +35,7 @@ export const itemRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number(),
-        take: z.number(),
+        take: z.number().optional(),
         skip: z.number().optional(),
         cursor: z.string().optional(),
       }),

@@ -3,9 +3,9 @@
   --slide-height: 14rem;
   --slide-spacing: 1rem;
   --slide-size: 100%;
-  --slide-spacing-sm: 1.6rem;
+  --slide-spacing-sm: 0.8rem;
   --slide-size-sm: 50%;
-  --slide-spacing-lg: 2rem;
+  --slide-spacing-lg: 1rem;
   --slide-size-lg: calc(100% / 4);
 }
 .embla__viewport {
@@ -51,16 +51,16 @@
   font-size: 4rem;
   font-weight: 600;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
-  height: var(--slide-height);
-  padding-bottom: 25px;
+  height: 12rem;
+  padding-bottom: -10px;
 }
 .embla__controls {
   display: grid;
   grid-template-columns: auto 1fr;
   justify-content: space-between;
-  gap: 1.2rem;
+  gap: 0.6rem;
   margin-top: 1.8rem;
 }
 .embla__buttons {

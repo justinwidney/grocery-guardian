@@ -12,6 +12,8 @@ import useEmblaCarousel from "embla-carousel-react";
 import Card from "./item-card";
 import { Item } from "@prisma/client";
 import { api } from "~/trpc/react";
+import { EmblaCarouselType } from "embla-carousel";
+import { useCartStore } from "~/stores/cart";
 
 type PropType = {
   slides: number[];
@@ -23,8 +25,30 @@ function EmblaCarousel(props: PropType) {
   const { slides, options, title } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
 
-  const [page, setPage] = React.useState(0);
-  const [myData, setMyData] = React.useState([] as Item[]);
+  const scrollProgress = React.useCallback(
+    (emblaApi: EmblaCarouselType) => {
+      return () => {
+        const progress = emblaApi.scrollProgress();
+        return progress;
+      };
+    },
+    [emblaApi?.scrollProgress()],
+  );
+
+  React.useEffect(() => {
+    if (emblaApi) {
+      emblaApi.on("slidesInView", scrollProgress);
+
+      console.log(emblaApi.scrollProgress());
+
+      if (emblaApi.scrollProgress() > 0.25) {
+        if (hasNextPage) {
+          console.log("fetching next page");
+          fetchNextPage();
+        }
+      }
+    }
+  }, [emblaApi, scrollProgress]);
 
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
@@ -36,11 +60,10 @@ function EmblaCarousel(props: PropType) {
     onNextButtonClick,
   } = usePrevNextButtons(emblaApi);
 
-  const { data, refetch, fetchNextPage, isSuccess } =
+  const { data, refetch, fetchNextPage, isFetchingNextPage, hasNextPage } =
     api.item.getAll.useInfiniteQuery(
       {
-        limit: 6,
-        take: 6,
+        limit: 7,
       },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -48,6 +71,28 @@ function EmblaCarousel(props: PropType) {
     );
 
   if (!data) return;
+
+  const fakeData = {
+    pages: [
+      {
+        items: [
+          {
+            name: "Item 1",
+            price: 2.99,
+            quantity: 10,
+            stores: [{ name: "Store", price: 10 }],
+          },
+          {
+            name: "Item 2",
+            price: 2.99,
+            quantity: 10,
+            stores: [{ name: "Store", price: 10 }],
+          },
+        ],
+        nextCursor: "blank",
+      },
+    ],
+  };
 
   return (
     <>
@@ -58,21 +103,16 @@ function EmblaCarousel(props: PropType) {
           </div>
 
           <div className="flex flex-1 items-center justify-end">
-            <p>View all</p>
+            <button>View all</button>
 
             <PrevButton
               onClick={onPrevButtonClick}
               disabled={prevBtnDisabled}
             />
-            <button
-              onClick={() => {
-                setPage((prev) => prev + 1);
-                fetchNextPage();
-              }}
-            >
-              {" "}
-              Load more{" "}
-            </button>
+            <NextButton
+              onClick={onNextButtonClick}
+              disabled={prevBtnDisabled}
+            />
           </div>
         </div>
         <div className="embla__viewport" ref={emblaRef}>
@@ -86,13 +126,13 @@ function EmblaCarousel(props: PropType) {
                   >
                     <div className="embla__slide__number  border-#DFDFDF border-2 border-solid">
                       <Card
-                        title={item.name || "ERROR"}
+                        item={item}
+                        category={title}
                         stores={[{ name: "Store", price: 10 }]}
                         price={2.99}
                         quantity={10}
                         imageUrl="https://via.placeholder.com/150"
                         onFavorite={() => {}}
-                        onAddToCart={() => {}}
                       />
                     </div>
                   </div>
@@ -101,6 +141,21 @@ function EmblaCarousel(props: PropType) {
             ) : (
               <p>No items found</p>
             )}
+            {isFetchingNextPage ? (
+              <div className="embla__slide min-w-0 flex-1 pl-4" key={"temp 1"}>
+                <div className="embla__slide__number  border-#DFDFDF border-2 border-solid">
+                  <Card
+                    title={"LOADING..."}
+                    stores={[{ name: "Store", price: 10 }]}
+                    price={2.99}
+                    quantity={10}
+                    imageUrl="https://via.placeholder.com/150"
+                    onFavorite={() => {}}
+                    onAddToCart={() => {}}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

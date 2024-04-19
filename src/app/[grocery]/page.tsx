@@ -15,6 +15,7 @@ import { api } from "~/trpc/server";
 const OPTIONS: EmblaOptionsType = {
   align: "start",
   dragFree: false,
+  dragThreshold: 5,
   loop: true,
 };
 const SLIDE_COUNT = 6;

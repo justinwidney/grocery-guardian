@@ -27,6 +27,7 @@ import {
   X,
   ShoppingCart,
   Heart,
+  Ellipsis,
 } from "lucide-react";
 
 export const Icons = {
@@ -39,8 +40,8 @@ export const Icons = {
   page: File,
   media: Image,
   settings: Settings,
+  ellipsis: Ellipsis,
   billing: CreditCard,
-  ellipsis: MoreVertical,
   add: Plus,
   warning: AlertTriangle,
   shoppingCart: ShoppingCart,

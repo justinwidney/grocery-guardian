@@ -3,6 +3,7 @@ import { MainNav } from "./main-nav";
 import { buttonVariants } from "./ui/button";
 import { cn } from "~/utils/form-handling";
 import { Icons } from "./icons";
+import Basket from "./basket";
 
 export function Header() {
   return (
@@ -18,8 +19,7 @@ export function Header() {
                 "px-4",
               )}
             >
-              <Icons.shoppingBasket />
-              <span className="px-4"> Cart</span>
+              <Basket />
             </Link>
             <Link
               href="/login"

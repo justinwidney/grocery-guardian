@@ -1,25 +1,34 @@
+"use client";
+
 import React, { useEffect } from "react";
 import { Icons } from "~/components/icons";
+import ScrollAreaDemo from "../ScrollArea";
+import { Item } from "@prisma/client";
+import { useCartStore } from "~/stores/cart";
 
 type PropType = {
-  title: string;
+  item: Item;
+  category: string;
   stores: { name: string; price: number }[];
   price: number;
   quantity: number;
   imageUrl: string;
   onFavorite: () => void;
-  onAddToCart: () => void;
 };
 
 const Card = ({
-  title,
+  item,
   stores,
   price,
+  category,
   quantity,
   imageUrl,
   onFavorite,
-  onAddToCart,
 }: PropType) => {
+  const { name } = item;
+
+  const { add: handleAddToCart } = useCartStore();
+
   useEffect(() => {
     console.log("Card component mounted");
     return () => {
@@ -29,33 +38,40 @@ const Card = ({
 
   return (
     <>
-      <div className="relative">
-        <div className="flex">
-          <div className="w-1/2">
-            <h2 className="mb-4 text-xs font-bold">{title}</h2>
-            <ul className="mb-4">
-              {stores.map((store, index) => (
-                <li key={index} className="flex justify-between">
-                  <span className="text-xs">{store.name}</span>
-                  <span className="text-xs">${store.price}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mb-4">
-              <p className="text-xs text-gray-600">Price: ${price}</p>
-              <p className="text-xs text-gray-600">Quantity: {quantity}</p>
+      <div className="relative flex w-full px-2 pl-4 ">
+        <div className="flex w-full flex-col">
+          <div className="w-full">
+            <h2 className=" pt-2 text-base  font-bold ">{name}</h2>
+          </div>
+          <div className="flex">
+            <div className="w-7/12">
+              <div className="mb-4 flex h-4 flex-row items-center justify-between ">
+                <p className="text-netural-400 text-sm font-light">beatrice</p>
+                <Icons.ellipsis />
+              </div>
+              <ul className="mb-4">
+                {stores.map((store, index) => (
+                  <li key={index} className="flex justify-between">
+                    <ScrollAreaDemo title={name} category={category} />
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex justify-between">
+                <p className="text-lg font-bold">${price}</p>
+                <p className="text-sm text-neutral-400">sold as: {quantity}L</p>
+              </div>
+            </div>
+            <div className="w-5/12 pt-4 ">
+              <img
+                src="https://assets.shop.loblaws.ca/products/21369455/b2/en/front/21369455_front_a06_@2.png"
+                alt="Product"
+                className="h-auto w-full rounded-lg"
+              />
             </div>
           </div>
-          <div className="w-1/2">
-            <img
-              src={imageUrl}
-              alt="Product"
-              className="h-auto w-full rounded-lg"
-            />
-          </div>
         </div>
-
-        <div className="absolute -bottom-16 left-0 right-0 flex translate-y-1/2 transform justify-center overflow-auto">
+        <div className="absolute -bottom-6 -right-0 left-0 ml-[-2] flex translate-y-1/2 transform justify-center overflow-auto">
           <button
             className="border-#DFDFDF  mr-2 border-2 border-solid bg-white px-4 py-2 text-xs text-white focus:outline-none"
             onClick={onFavorite}
@@ -64,7 +80,7 @@ const Card = ({
           </button>
           <button
             className="border-#DFDFDF border-2 border-solid bg-emerald-300 px-4 py-2 text-xs text-white focus:outline-none"
-            onClick={onAddToCart}
+            onClick={() => handleAddToCart(item)}
           >
             <Icons.shoppingCart />
           </button>
