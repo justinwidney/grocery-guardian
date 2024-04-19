@@ -12,9 +12,10 @@ export type CartStore = {
   add: (item: Item) => void;
   remove: (idProduct: string) => void;
   removeAll: () => void;
+  incrementItem: (id: string) => void;
 };
 
-export const useCartStore = create<CartStore>(
+export const useCartStore = create<CartStore, [["zustand/persist", unknown]]>(
   persist(
     (set, get) => ({
       cart: [],
@@ -28,7 +29,12 @@ export const useCartStore = create<CartStore>(
       },
       add: (item: Item) => {
         const { cart } = get();
-        const updatedCart = updateCart(item, cart);
+        const updatedCart = addToCart(cart, item);
+        set({ cart: updatedCart });
+      },
+      incrementItem: (id: string) => {
+        const { cart } = get();
+        const updatedCart = incrementInCart(cart, id);
         set({ cart: updatedCart });
       },
       remove: (idProduct: string) => {
@@ -56,6 +62,35 @@ function updateCart(item: Item, cart: CartItem[]): CartItem[] {
     });
   }
 
+  return cart;
+}
+
+const addToCart = (cart: CartItem[], product: Item): CartItem[] => {
+  const item = cart.find((item) => item.id === product.id);
+
+  if (item) {
+    return cart.map((item) => {
+      if (item.id === product.id) {
+        const itemCount = item.count >= 1 ? item.count : 1;
+        return { ...item, count: itemCount };
+      }
+      return item;
+    });
+  }
+
+  return [...cart, { ...product, count: 1 }];
+};
+
+function incrementInCart(cart: CartItem[], id: string): CartItem[] {
+  const item = cart.find((item) => item.id === id);
+  if (item) {
+    return cart.map((item) => {
+      if (item.id === id) {
+        return { ...item, count: item.count + 1 };
+      }
+      return item;
+    });
+  }
   return cart;
 }
 

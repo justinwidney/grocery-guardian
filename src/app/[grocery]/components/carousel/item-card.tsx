@@ -4,7 +4,8 @@ import React, { useEffect } from "react";
 import { Icons } from "~/components/icons";
 import ScrollAreaDemo from "../ScrollArea";
 import { Item } from "@prisma/client";
-import { useCartStore } from "~/stores/cart";
+import { CartStore, useCartStore } from "~/stores/cart";
+import useStore from "~/stores/useStore";
 
 type PropType = {
   item: Item;
@@ -27,14 +28,14 @@ const Card = ({
 }: PropType) => {
   const { name } = item;
 
-  const { add: handleAddToCart } = useCartStore();
+  const cartStore = useStore<CartStore, CartStore>(
+    useCartStore,
+    (state: any) => state,
+  );
 
-  useEffect(() => {
-    console.log("Card component mounted");
-    return () => {
-      console.log("Card component unmounted");
-    };
-  }, []);
+  if (!cartStore) return;
+
+  const { count, add, cart, incrementItem } = cartStore;
 
   return (
     <>
@@ -78,12 +79,22 @@ const Card = ({
           >
             <Icons.heart className="stroke-neutral-400" />
           </button>
-          <button
-            className="border-#DFDFDF border-2 border-solid bg-emerald-300 px-4 py-2 text-xs text-white focus:outline-none"
-            onClick={() => handleAddToCart(item)}
-          >
-            <Icons.shoppingCart />
-          </button>
+
+          {cart.find((cartItem) => cartItem.id === item.id) ? (
+            <button
+              className="border-#DFDFDF border-2 border-solid bg-emerald-300 px-4 py-2 text-xs text-white focus:outline-none"
+              onClick={() => incrementItem(item.id)}
+            >
+              {cart.find((cartItem) => cartItem.id === item.id)?.count}
+            </button>
+          ) : (
+            <button
+              className="border-#DFDFDF border-2 border-solid bg-emerald-300 px-4 py-2 text-xs text-white focus:outline-none"
+              onClick={() => add(item)}
+            >
+              <Icons.shoppingCart />
+            </button>
+          )}
         </div>
       </div>
     </>
